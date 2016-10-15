@@ -21,6 +21,7 @@ namespace RandalApps.IdentityServer
 {
     public class Startup
     {
+        private IHostingEnvironment _environment;
 
         public Startup(IHostingEnvironment env)
         {
@@ -36,13 +37,15 @@ namespace RandalApps.IdentityServer
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            _environment = env;
         }
 
         private IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IConfiguration>(x => Configuration);
+            services.AddScoped(x => Configuration);
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -61,9 +64,9 @@ namespace RandalApps.IdentityServer
                                             .AddAspNetIdentity<ApplicationUser>()
                                             .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
 
-            if (File.Exists(Path.Combine(env.ContentRootPath, "idsvr3test.pfx")))
+            if (File.Exists(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx")))
             {
-                var cert = new X509Certificate2(Path.Combine(env.ContentRootPath, "idsvr3test.pfx"), "idsrv3test");
+                var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx"), "idsrv3test");
                 identityServerBuilder.SetSigningCredential(cert);
             }
             else

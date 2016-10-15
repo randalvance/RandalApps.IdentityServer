@@ -1,4 +1,5 @@
-﻿using IdentityServer4.EntityFramework.Mappers;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using RandalApps.IdentityServer.Data.DbContexts;
@@ -13,7 +14,7 @@ namespace RandalApps.IdentityServer.Data
     {
         public static void SeedData(this IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            var dbContext = (IdentityServerDbContext)serviceProvider.GetService(typeof(IdentityServerDbContext));
+            var dbContext = (ConfigurationDbContext)serviceProvider.GetService(typeof(ConfigurationDbContext));
 
             if (dbContext.Clients.Count() > 0)
             {
@@ -29,7 +30,7 @@ namespace RandalApps.IdentityServer.Data
             dbContext.SaveChanges();
         }
 
-        private static List<IdentityServerEF.Scope> AddInitialScopes(IdentityServerDbContext dbContext)
+        private static List<IdentityServerEF.Scope> AddInitialScopes(ConfigurationDbContext dbContext)
         {
             var scopes = new List<IdentityServerEF.Scope>()
             {
@@ -51,7 +52,7 @@ namespace RandalApps.IdentityServer.Data
             return scopes;
         }
 
-        private static List<IdentityServerEF.Client> AddInitialClients(IdentityServerDbContext dbContext, List<IdentityServerEF.Scope> scopes)
+        private static List<IdentityServerEF.Client> AddInitialClients(ConfigurationDbContext dbContext, List<IdentityServerEF.Scope> scopes)
         {
             var implicitGrantType = new IdentityServerEF.ClientGrantType() { GrantType = "implicit" };
             var hybridGrantType = new IdentityServerEF.ClientGrantType() { GrantType = "hybrid" };
